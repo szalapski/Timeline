@@ -87,35 +87,47 @@ a, .btn-link {
 .timeline-pane {
     display: flex;
     border: 1px solid black;
+    padding: 1em;
 }
 
-.vertical-timeline {
+
+.timeline-strip {
     flex: 0 1 auto;
-    background-color: lightgray;
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 90px;
 }
 
-    .vertical-timeline .event-region {
-        position: relative;
-        height: 100%;
-        flex-grow: 1;
+    .timeline-strip.axis-labels-pane {
+        width: 50px;
+        margin-block: -.5em;
+    }
+
+    .timeline-strip.vertical-timeline {
+        width: 50px;
+    }
+
+    .timeline-strip.event-labels-pane {
+        width: 150px;
+    }
+
+.timeline-middle {
+    position: relative;
+    height: 100%;
+    flex-grow: 1;
+    padding-left: 2px;
+}
+
+    .event-region {
         border-left: 4px solid black;
-        padding-left: 2px;
     }
 
 
-    .vertical-timeline .timeline-marker {
+    .timeline-marker {
         position: absolute;
         white-space: nowrap;
+        margin-left: -2px;
     }
-
-        .vertical-timeline .timeline-marker:before {
-            content: "— ";
-            margin-left: -2px;
-        }
 
 .items-list {
     margin-left: 10px;

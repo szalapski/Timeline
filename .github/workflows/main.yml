@@ -17,10 +17,10 @@ jobs:
       with:
         dotnet-version: 6.0.x
     # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
-    - name: Add .nojekyll file
-      run: touch release/wwwroot/.nojekyll
     - name: Publish .NET Core Project
       run: dotnet publish Sz.Timeline/Server/Sz.Timeline.Server.csproj -c Release -o release --nologo    
+    - name: Add .nojekyll file
+      run: touch release/wwwroot/.nojekyll
     - name: Change base-tag in index.html from / to Timeline
       run: sed -i 's/<base href="\/" \/>/<base href="\/Timeline\/" \/>/g' release/wwwroot/index.html
     - name: Commit wwwroot to GitHub Pages

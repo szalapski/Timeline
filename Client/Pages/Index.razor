@@ -1,0 +1,74 @@
+﻿@page "/"
+@using System.Diagnostics
+@using Sz.Timeline.Client.ViewModels
+
+<PageTitle>Index</PageTitle>
+
+<div class="full-height-box">
+    <section class="main-content">
+
+        <div class="timeline-pane">
+
+            <div class="vertical-timeline">
+                <div class="beginning-year">@Timeline.StartYear</div>
+                <div class="event-region">
+                    @for(int i=0; i < Timeline.Items.Count; ++i)
+                    {
+                        <div class="timeline-marker"
+                            style=" top: calc(@(Timeline.GetPositionPercentage(Timeline.Items[i].Date))% - .78em);">
+                            @(Timeline.Items[i].Name ?? (i+1).ToString())
+                        </div>
+                    }
+                </div>
+                <div class="end-year">@Timeline.EndYear</div>
+
+            </div>
+            <ol class="items-list">
+
+                @foreach (var item in Timeline.Items)
+                {
+                    <li><em>@item.Date.Year</em> @item.Description</li>
+                }
+
+            </ol>
+        </div>
+
+
+        <div class="source-pane">
+            <p>Enter events, one per line, in the format <code>YYYY Name Event description</code> </p>
+
+            <textarea rows="25" cols="80" value="@ItemsText" @onchange="ParseEventsInOrder">        </textarea>
+        </div>
+
+
+    </section>
+</div>
+
+@code {
+    private string ItemsText { get; set; } = philosophersItemsText;
+    private TimelineVM Timeline { get; set; } = new(philosophersItemsText);
+    private void ParseEventsInOrder(ChangeEventArgs args) => ParseEventsInOrder(args.Value as string);
+    private void ParseEventsInOrder(string? itemsText) => Timeline = new(ItemsText);
+
+
+    private const string philosophersItemsText = @"
+        170 MarcusAurelius
+        1619 Descartes  I am thinking, therefore I am; everything further is unsure (Cartesian doubt, rationalism) 
+        1776 Hume  Basic reliability of sense perception (natural foundationalism, empiricism); The self is a bundle of experiences and there is no “owner”; it cannot even be said that we are aware of our selves; No existence is necessary; we can conceive that God doesn’t exist.
+        1953 Wittgenstein  if mind and body are separate, we can’t assume anyone thinks like we do (beetle)
+        1660 Spinoza  Hard determinism: the past (and nothing else) brings about the present and future
+        1781 Kant  “Freedom” of clockwork
+        1839 Shopenhauer  Compatibilism: “could have done otherwise” means “would have done otherwise if they had chosen differently and would have chosen differently under certain circumstances”
+        1690 Locke  The same man can be inhabited by different persons; I am not the man I was 30 years ago.
+        1781 Kant  My experiences are mine (they require me to even exist)--they require self-consciousness; “I” is the point-of-view from which experience starts. Experiences are not things in their own right.
+        1785 Reid  The self/soul is simple, not composite.
+        1641 Descartes  Trademark argument: I exist and have the idea of God, for he placed this idea in me as the mark of the craftsman stamped on his work.
+        1078 Anselm  Ontological argument: God can be conceived, therefore he must exist in reality. (Suppose he doesn’t; then a greater being can be conceived, that is, one who exists)
+        1250 ThomasAquinas  Cosmological argument: all things observable are caused, so there must be an uncaused necessary first cause that self-exists and was not caused.
+        1658 Pascal  Pascal’s Wager
+        1953 Wittgenstein  If God is incomprehensible, “A nothing will serve just as well as a something about which nothing could be said.”
+1825 Coleridge  “He who begins by loving Christianity better than truth will proceed by loving his own Church better than Christianity and end in loving himself better than all.”
+";
+
+
+}

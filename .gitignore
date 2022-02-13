@@ -1,0 +1,14 @@
+[Oo]bj
+[Bb]in
+.vs
+*.user
+*.suo
+*.[Cc]ache
+*.bak
+*.ncb
+*.log 
+/TestResults
+*.vspscc
+*.vssscc
+[Tt]humbs.db
+/release

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace Sz.Timeline.Client.ViewModels;
 
@@ -11,6 +6,8 @@ public class TimelineVM
 {
     public TimelineVM(string? itemsText)
     {
+        Console.WriteLine(itemsText);
+
         Items = itemsText == null ? new() : ParseTimelineEvents(itemsText).OrderBy(i => i.Date).ToList();
         if (!Items.Any()) throw new InvalidOperationException("At least one event with a date is required.");
     }
@@ -32,7 +29,11 @@ public class TimelineVM
         return Items.Any() ? 100m * ((decimal)(date.DayNumber - Start!.Value.DayNumber)) / DaysInTimeline!.Value : 0;
     }
 
-    private IEnumerable<TimelineEvent> ParseTimelineEvents(string itemsText)
+
+
+    private const decimal tooCloseTolerancePercent = 2m;
+
+    private static IEnumerable<TimelineEvent> ParseTimelineEvents(string itemsText)
     {
         Stopwatch watch = Stopwatch.StartNew();
         foreach (string eventText in itemsText.Trim().Split(Environment.NewLine))
@@ -58,7 +59,24 @@ public class TimelineVM
         Console.WriteLine($"parsing took {watch.ElapsedMilliseconds} ms");
     }
 
+    public List<decimal> LabelPositionPercents => Items.Select(i => GetPositionPercentage(i.Date)).ToList();
+    public List<decimal> AdjustedLabelPositionPercents { get
+        {
+            List<decimal> results = new();
+            foreach(decimal percentage in LabelPositionPercents)
+            {
+                decimal result = percentage;
+                Console.WriteLine($"{percentage}");
+                if (results.Any(p => percentage < tooCloseTolerancePercent + p))
+                    result = percentage + tooCloseTolerancePercent;
+                results.Add(result);
+            }
+            return results;
+        }
+    }
 
-    public record TimelineEvent(DateOnly Date, string? Name, string Description);
+    public record TimelineEvent(DateOnly Date, string? Name, string Description)
+    {
+    }
 
 }

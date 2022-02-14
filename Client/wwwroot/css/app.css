@@ -88,6 +88,11 @@ a, .btn-link {
     display: flex;
     border: 1px solid black;
     padding: 1em;
+    width: 70%;
+}
+
+.source-pane {
+    width: 30%;
 }
 
 
@@ -118,15 +123,20 @@ a, .btn-link {
     padding-left: 2px;
 }
 
-    .event-region {
-        border-left: 4px solid black;
-    }
+.event-region {
+    border-left: 4px solid black;
+}
 
 
-    .timeline-marker {
-        position: absolute;
-        white-space: nowrap;
-        margin-left: -2px;
+.timeline-marker {
+    position: absolute;
+    white-space: nowrap;
+    margin-left: -2px;
+}
+
+    .timeline-marker.year, .end-year {
+        width: 40px;
+        text-align: right;
     }
 
 .items-list {

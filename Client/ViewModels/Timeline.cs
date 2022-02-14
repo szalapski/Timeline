@@ -6,32 +6,51 @@ public class TimelineVM
 {
     public TimelineVM(string? itemsText)
     {
-        Console.WriteLine(itemsText);
-
         Items = itemsText == null ? new() : ParseTimelineEvents(itemsText).OrderBy(i => i.Date).ToList();
         if (!Items.Any()) throw new InvalidOperationException("At least one event with a date is required.");
     }
 
     public List<TimelineEvent> Items { get; set; } = new();
 
-    public DateOnly? Start => Items.Any() ? new(Items.First().Date.Year, 1, 1) : null;
-    public DateOnly? End => Items.Any() ? new(Items.Last().Date.Year + 1, 1, 1) : null;
+    public DateOnly Start => new(RoundToIntervalYearOnOrBefore(Items.First().Date.Year), 1, 1);
+    public DateOnly End => new(RoundToIntervalYearOnOrAfter(Items.Last().Date.Year + 1), 1, 1);
 
-    public int? StartYear => Start?.Year;
-    public int? DisplayStartYear => StartYear == null ? null : StartYear - 1;
-    public int? EndYear => End?.Year;
+    public int StartYear => Start.Year;
+    public int EndYear => End.Year;
+    public int YearsOfEventsCount => Items.Last().Date.Year - Items.First().Date.Year;
 
-    public int? DaysInTimeline => Items.Any() ? End!.Value.DayNumber - Start!.Value.DayNumber : null;
+    public int YearsInterval
+    {
+        get
+        {
+            if (YearsOfEventsCount < 20) return 1;
+            if (YearsOfEventsCount < 40) return 2;
+            if (YearsOfEventsCount < 100) return 5;
+            if (YearsOfEventsCount < 200) return 10;
+            if (YearsOfEventsCount < 400) return 20;
+            if (YearsOfEventsCount < 1000) return 50;
+            if (YearsOfEventsCount < 2000) return 100;
+            if (YearsOfEventsCount < 4000) return 200;
+            if (YearsOfEventsCount < 10000) return 500;
+            if (YearsOfEventsCount < 20000) return 1000;
+            if (YearsOfEventsCount < 40000) return 2000;
+            return 5000;
+        }
+    }
+
+    public int DaysInTimeline => End.DayNumber - Start.DayNumber;
 
     public decimal GetPositionPercentage(DateOnly date)
     {
         if (date < Start || date > End) throw new ArgumentOutOfRangeException(nameof(date));
-        return Items.Any() ? 100m * ((decimal)(date.DayNumber - Start!.Value.DayNumber)) / DaysInTimeline!.Value : 0;
+        return 100m * ((decimal)(date.DayNumber - Start.DayNumber)) / DaysInTimeline;
     }
 
+    public int RoundToIntervalYearOnOrBefore(int year) => year / YearsInterval * YearsInterval;
+    public int RoundToIntervalYearOnOrAfter(int year) => (year+YearsInterval-1) / YearsInterval * YearsInterval;
 
 
-    private const decimal tooCloseTolerancePercent = 2m;
+    private const decimal tooCloseTolerancePercent = 1.5m;
 
     private static IEnumerable<TimelineEvent> ParseTimelineEvents(string itemsText)
     {
@@ -63,16 +82,22 @@ public class TimelineVM
     public List<decimal> AdjustedLabelPositionPercents { get
         {
             List<decimal> results = new();
-            foreach(decimal percentage in LabelPositionPercents)
+            foreach(decimal percentage in LabelPositionPercents.OrderBy(d=>d))
             {
                 decimal result = percentage;
-                Console.WriteLine($"{percentage}");
-                if (results.Any(p => percentage < tooCloseTolerancePercent + p))
-                    result = percentage + tooCloseTolerancePercent;
+                decimal lastPosition = results.LastOrDefault();
+                result = NudgeDownToAvoidOverlap(results, result, lastPosition);
                 results.Add(result);
             }
             return results;
         }
+    }
+
+    private static decimal NudgeDownToAvoidOverlap(List<decimal> results, decimal result, decimal lastPosition)
+    {
+        if (results.Any() && result < lastPosition + tooCloseTolerancePercent)
+            result = lastPosition + tooCloseTolerancePercent;
+        return result;
     }
 
     public record TimelineEvent(DateOnly Date, string? Name, string Description)

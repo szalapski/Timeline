@@ -27,12 +27,23 @@
                     @for (int i = 0; i < Timeline.Items.Count; ++i)
                     {
                         <div
-                          class="timeline-marker"
-                          style=" top: calc(@(Timeline.GetPositionPercentage(Timeline.Items[i].Date))% - .85em);">
-                            —
+                          class="timeline-marker hash-mark"
+                          style=" top: CALC(@(Timeline.GetPositionPercentage(Timeline.Items[i].Date))%);">
+                            &nbsp;
                         </div>
                     }
                 </div>
+            </div>
+             <div class="timeline-strip lines-pane">
+                @for (int i = 0; i < Timeline.AdjustedLabelPositionPercents.Count(); ++i)
+                {
+                    <div class="timeline-marker connecting-line"
+                     style="
+                        top: @(Timeline.GetPositionPercentage(Timeline.Items[i].Date))% ;
+                        height: MAX(1px, @(Timeline.AdjustedLabelPositionPercents[i] - Timeline.LabelPositionPercents[i])%);">
+                      &nbsp;
+                    </div>
+                }
             </div>
 
             <div class="timeline-strip event-labels-pane">

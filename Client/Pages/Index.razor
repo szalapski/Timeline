@@ -10,16 +10,25 @@
         <div class="timeline-pane">
 
             <div class="timeline-strip axis-labels-pane">
-                <div class="beginning-year">@Timeline.StartYear</div>
-                <div class="timeline-middle"></div>
+                <div class="timeline-middle">
+                    @for (int i = Timeline.StartYear; i < Timeline.EndYear; i += Timeline.YearsInterval)
+                    {
+                        <div
+                            class="timeline-marker year"
+                            style="top: calc(@(Timeline.GetPositionPercentage(new DateOnly(i,1,1)))%);">
+                            @i
+                        </div>
+                    }
+                </div>
                 <div class="end-year">@Timeline.EndYear</div>
             </div>
             <div class="timeline-strip vertical-timeline">
                 <div class="timeline-middle event-region">
                     @for (int i = 0; i < Timeline.Items.Count; ++i)
                     {
-                        <div class="timeline-marker"
-                         style=" top: calc(@(Timeline.GetPositionPercentage(Timeline.Items[i].Date))% - .85em);">
+                        <div
+                          class="timeline-marker"
+                          style=" top: calc(@(Timeline.GetPositionPercentage(Timeline.Items[i].Date))% - .85em);">
                             —
                         </div>
                     }
@@ -30,7 +39,7 @@
                 @for (int i = 0; i < Timeline.AdjustedLabelPositionPercents.Count(); ++i)
                 {
                     <div class="timeline-marker"
-                     style=" top: calc(@(Timeline.AdjustedLabelPositionPercents[i])% - .85em);">
+                     style="top: calc(@(Timeline.AdjustedLabelPositionPercents[i])% - .85em);">
                         @(Timeline.Items[i].Name ?? (i+1).ToString())
                     </div>
                 }
@@ -61,28 +70,24 @@
     private TimelineVM Timeline { get; set; } = new(philosophersItemsText);
     private void ParseEventsInOrder(ChangeEventArgs args)
     {
-        Console.WriteLine($"{args}");
         ParseEventsInOrder(args.Value as string);
     }
     private void ParseEventsInOrder(string? itemsText) => Timeline = new(itemsText);
 
 
     private const string philosophersItemsText = @"
-170 MarcusAurelius
-1619 Descartes  I am thinking, therefore I am; everything further is unsure (Cartesian doubt, rationalism)
-1776 Hume  Basic reliability of sense perception (natural foundationalism, empiricism); The self is a bundle of experiences and there is no “owner”; it cannot even be said that we are aware of our selves; No existence is necessary; we can conceive that God doesn’t exist.
-1953 Wittgenstein  if mind and body are separate, we can’t assume anyone thinks like we do (beetle)
+170 MarcusAurelius Stoicism
+1619 Descartes  I am thinking, therefore I am; everything further is unsure (Cartesian doubt, rationalism); Trademark argument: I exist and have the idea of God, for he placed this idea in me as the mark of the craftsman stamped on his work.
 1660 Spinoza  Hard determinism: the past (and nothing else) brings about the present and future
-1781 Kant  “Freedom” of clockwork
-1839 Shopenhauer  Compatibilism: “could have done otherwise” means “would have done otherwise if they had chosen differently and would have chosen differently under certain circumstances”
 1690 Locke  The same man can be inhabited by different persons; I am not the man I was 30 years ago.
-1781 Kant  My experiences are mine (they require me to even exist)--they require self-consciousness; “I” is the point-of-view from which experience starts. Experiences are not things in their own right.
+1776 Hume  Basic reliability of sense perception (natural foundationalism, empiricism); The self is a bundle of experiences and there is no “owner”; it cannot even be said that we are aware of our selves; No existence is necessary; we can conceive that God doesn’t exist.
+1839 Shopenhauer  Compatibilism: “could have done otherwise” means “would have done otherwise if they had chosen differently and would have chosen differently under certain circumstances”
+1781 Kant “Freedom” of clockwork; My experiences are mine (they require me to even exist)--they require self-consciousness; “I” is the point-of-view from which experience starts. Experiences are not things in their own right.
 1785 Reid  The self/soul is simple, not composite.
-1641 Descartes  Trademark argument: I exist and have the idea of God, for he placed this idea in me as the mark of the craftsman stamped on his work.
 1078 Anselm  Ontological argument: God can be conceived, therefore he must exist in reality. (Suppose he doesn’t; then a greater being can be conceived, that is, one who exists)
 1250 ThomasAquinas  Cosmological argument: all things observable are caused, so there must be an uncaused necessary first cause that self-exists and was not caused.
 1658 Pascal  Pascal’s Wager
-1953 Wittgenstein  If God is incomprehensible, “A nothing will serve just as well as a something about which nothing could be said.”
+1953 Wittgenstein  If God is incomprehensible, “A nothing will serve just as well as a something about which nothing could be said.” If mind and body are separate, we can’t assume anyone thinks like we do (beetle)
 1825 Coleridge  “He who begins by loving Christianity better than truth will proceed by loving his own Church better than Christianity and end in loving himself better than all.”
 ";
 

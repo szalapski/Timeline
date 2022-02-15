@@ -19,6 +19,14 @@ public class TimelineVM
     public int EndYear => End.Year;
     public int YearsOfEventsCount => Items.Last().Date.Year - Items.First().Date.Year;
 
+    /// <summary>
+    /// Gets or sets the amount to stretch recent years and thus compress earliest years.
+    /// The most recent n years will appear this many times larger than the second-most recent
+    /// n years.
+    /// </summary>
+    /// <remarks>Objects in the rear view mirror are closer than they appear</remarks>
+    public double Stretch { get; set; }  = 2.0;
+
     public int YearsInterval
     {
         get
@@ -40,17 +48,27 @@ public class TimelineVM
 
     public int DaysInTimeline => End.DayNumber - Start.DayNumber;
 
-    public decimal GetPositionPercentage(DateOnly date)
+    //linear
+    //public decimal GetPositionPercentage(DateOnly date)
+    //{
+    //    if (date < Start || date > End) throw new ArgumentOutOfRangeException(nameof(date));
+    //    return 100m * ((decimal)(date.DayNumber - Start.DayNumber)) / DaysInTimeline;
+    //}
+
+    public double GetPositionPercentage(DateOnly date)
     {
         if (date < Start || date > End) throw new ArgumentOutOfRangeException(nameof(date));
-        return 100m * ((decimal)(date.DayNumber - Start.DayNumber)) / DaysInTimeline;
+        double portion = ((double)(date.DayNumber - Start.DayNumber)) / DaysInTimeline;
+        portion = Math.Pow(portion, Stretch);
+
+        return 100.0 * portion;
     }
 
-    public int RoundToIntervalYearOnOrBefore(int year) => year / YearsInterval * YearsInterval;
+    public int RoundToIntervalYearOnOrBefore(int year) =>  year / YearsInterval * YearsInterval;
     public int RoundToIntervalYearOnOrAfter(int year) => (year+YearsInterval-1) / YearsInterval * YearsInterval;
 
 
-    private const decimal tooCloseTolerancePercent = 1.5m;
+    private const double tooCloseTolerancePercent = 1.5;
 
     private static IEnumerable<TimelineEvent> ParseTimelineEvents(string itemsText)
     {
@@ -78,14 +96,16 @@ public class TimelineVM
         Console.WriteLine($"parsing took {watch.ElapsedMilliseconds} ms");
     }
 
-    public List<decimal> LabelPositionPercents => Items.Select(i => GetPositionPercentage(i.Date)).ToList();
-    public List<decimal> AdjustedLabelPositionPercents { get
+    public List<double> LabelPositionPercents => Items.Select(i => GetPositionPercentage(i.Date)).ToList();
+
+
+    public List<double> AdjustedLabelPositionPercents { get
         {
-            List<decimal> results = new();
-            foreach(decimal percentage in LabelPositionPercents.OrderBy(d=>d))
+            List<double> results = new();
+            foreach(double percentage in LabelPositionPercents.OrderBy(d=>d))
             {
-                decimal result = percentage;
-                decimal lastPosition = results.LastOrDefault();
+                double result = percentage;
+                double lastPosition = results.LastOrDefault();
                 result = NudgeDownToAvoidOverlap(results, result, lastPosition);
                 results.Add(result);
             }
@@ -93,7 +113,7 @@ public class TimelineVM
         }
     }
 
-    private static decimal NudgeDownToAvoidOverlap(List<decimal> results, decimal result, decimal lastPosition)
+    private static double NudgeDownToAvoidOverlap(List<double> results, double result, double lastPosition)
     {
         if (results.Any() && result < lastPosition + tooCloseTolerancePercent)
             result = lastPosition + tooCloseTolerancePercent;

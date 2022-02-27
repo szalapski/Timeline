@@ -37,8 +37,8 @@
       "System.Runtime.dll": "sha256-I0Q3fYYorVdJ5jJa7KZBrnTWH3YCj01kFiO6EF2UvB4=",
       "System.Text.Encodings.Web.dll": "sha256-rzFuMXwq2ZVLfojxA8YTR2Xwk9cIdpBRQwD7kKsSp0Y=",
       "System.Text.Json.dll": "sha256-PookAhjZM8Pmggm1vu1RdIqXA596JrKwNmA+TNrkIkA=",
-      "Sz.Timeline.Client.dll": "sha256-GBh8qTZ8Nsg+RN3TbwCYXLrsp2\/HMTXoFAJenSfhIc0=",
-      "Sz.Timeline.Shared.dll": "sha256-XWgwm8dCmg0EAJJJ43DSyVtLN+vEKZwWWSIhZZt24uQ="
+      "Sz.Timeline.Client.dll": "sha256-zG5J7a1L\/DFYZ9Lp6MkZfCSEt5yRGuY\/thEvLkq+yRk=",
+      "Sz.Timeline.Shared.dll": "sha256-U5uwAnY++upai5pqAWP3o8BGZ4xmnLtmjc8gnmmGxAk="
     },
     "extensions": null,
     "lazyAssembly": null,

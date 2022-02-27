@@ -1,3 +1,3 @@
 # Sz.Timeline
 
-Makes visual timelines for studying based on dates or sequences of events
+A blazor app: makes visual timelines for studying based on dates or sequences of events
